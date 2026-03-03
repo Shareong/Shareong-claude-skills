@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 # 全局 skill 管理脚本
 # 用法：
-#   skill add <name>           # 在当前项目引入 skill
-#   skill add-global <name>    # 全局引入 skill（所有项目可用）
-#   skill remove <name>        # 从当前项目移除 skill
-#   skill remove-global <name> # 从全局移除 skill
-#   skill list                 # 列出仓库中所有可用 skills
+#   skill a <name>    # 在当前项目引入 skill
+#   skill ag <name>   # 全局引入 skill（所有项目可用）
+#   skill rm <name>   # 从当前项目移除 skill
+#   skill rmg <name>  # 从全局移除 skill
+#   skill ls          # 列出仓库中所有可用 skills
 
 REPO="$HOME/claude-skills"
 
 case "$1" in
-  add)
+  a)
     name="$2"
-    if [ -z "$name" ]; then echo "Usage: skill add <name>"; exit 1; fi
+    if [ -z "$name" ]; then echo "Usage: skill a <name>"; exit 1; fi
     if [ ! -d "$REPO/$name" ]; then echo "Error: skill '$name' not found in $REPO"; exit 1; fi
     mkdir -p ".claude/skills"
     if [ -e ".claude/skills/$name" ]; then
@@ -23,9 +23,9 @@ case "$1" in
       echo "✓ Added skill '$name' to current project (.claude/skills/$name)"
     fi
     ;;
-  add-global)
+  ag)
     name="$2"
-    if [ -z "$name" ]; then echo "Usage: skill add-global <name>"; exit 1; fi
+    if [ -z "$name" ]; then echo "Usage: skill ag <name>"; exit 1; fi
     if [ ! -d "$REPO/$name" ]; then echo "Error: skill '$name' not found in $REPO"; exit 1; fi
     mkdir -p "$HOME/.claude/skills"
     if [ -e "$HOME/.claude/skills/$name" ]; then
@@ -36,19 +36,19 @@ case "$1" in
       echo "✓ Added skill '$name' globally (~/.claude/skills/$name)"
     fi
     ;;
-  remove)
+  rm)
     name="$2"
-    if [ -z "$name" ]; then echo "Usage: skill remove <name>"; exit 1; fi
+    if [ -z "$name" ]; then echo "Usage: skill rm <name>"; exit 1; fi
     rm -f ".claude/skills/$name"
     echo "✓ Removed skill '$name' from current project"
     ;;
-  remove-global)
+  rmg)
     name="$2"
-    if [ -z "$name" ]; then echo "Usage: skill remove-global <name>"; exit 1; fi
+    if [ -z "$name" ]; then echo "Usage: skill rmg <name>"; exit 1; fi
     rm -f "$HOME/.claude/skills/$name"
     echo "✓ Removed skill '$name' from global skills"
     ;;
-  list)
+  ls)
     echo "Available skills in $REPO:"
     echo ""
     for d in "$REPO"/*/; do
@@ -65,10 +65,10 @@ case "$1" in
     echo "Usage: skill <command> [name]"
     echo ""
     echo "Commands:"
-    echo "  add <name>           Add skill to current project"
-    echo "  add-global <name>    Add skill globally (all projects)"
-    echo "  remove <name>        Remove skill from current project"
-    echo "  remove-global <name> Remove skill from global"
-    echo "  list                 List all available skills"
+    echo "  a <name>    Add skill to current project"
+    echo "  ag <name>   Add skill globally (all projects)"
+    echo "  rm <name>   Remove skill from current project"
+    echo "  rmg <name>  Remove skill from global"
+    echo "  ls          List all available skills"
     ;;
 esac
