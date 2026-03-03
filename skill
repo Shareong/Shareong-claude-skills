@@ -15,16 +15,26 @@ case "$1" in
     if [ -z "$name" ]; then echo "Usage: skill add <name>"; exit 1; fi
     if [ ! -d "$REPO/$name" ]; then echo "Error: skill '$name' not found in $REPO"; exit 1; fi
     mkdir -p ".claude/skills"
-    ln -sf "$REPO/$name" ".claude/skills/$name"
-    echo "✓ Added skill '$name' to current project (.claude/skills/$name)"
+    if [ -e ".claude/skills/$name" ]; then
+      ln -sf "$REPO/$name" ".claude/skills/$name"
+      echo "✓ Updated skill '$name' in current project (.claude/skills/$name)"
+    else
+      ln -sf "$REPO/$name" ".claude/skills/$name"
+      echo "✓ Added skill '$name' to current project (.claude/skills/$name)"
+    fi
     ;;
   add-global)
     name="$2"
     if [ -z "$name" ]; then echo "Usage: skill add-global <name>"; exit 1; fi
     if [ ! -d "$REPO/$name" ]; then echo "Error: skill '$name' not found in $REPO"; exit 1; fi
     mkdir -p "$HOME/.claude/skills"
-    ln -sf "$REPO/$name" "$HOME/.claude/skills/$name"
-    echo "✓ Added skill '$name' globally (~/.claude/skills/$name)"
+    if [ -e "$HOME/.claude/skills/$name" ]; then
+      ln -sf "$REPO/$name" "$HOME/.claude/skills/$name"
+      echo "✓ Updated skill '$name' globally (~/.claude/skills/$name)"
+    else
+      ln -sf "$REPO/$name" "$HOME/.claude/skills/$name"
+      echo "✓ Added skill '$name' globally (~/.claude/skills/$name)"
+    fi
     ;;
   remove)
     name="$2"
