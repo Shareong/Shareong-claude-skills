@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# 全局 skill 管理脚本
+# 用法：
+#   skill add <name>           # 在当前项目引入 skill
+#   skill add-global <name>    # 全局引入 skill（所有项目可用）
+#   skill remove <name>        # 从当前项目移除 skill
+#   skill remove-global <name> # 从全局移除 skill
+#   skill list                 # 列出仓库中所有可用 skills
+
+REPO="$HOME/claude-skills"
+
+case "$1" in
+  add)
+    name="$2"
+    if [ -z "$name" ]; then echo "Usage: skill add <name>"; exit 1; fi
+    if [ ! -d "$REPO/$name" ]; then echo "Error: skill '$name' not found in $REPO"; exit 1; fi
+    mkdir -p ".claude/skills"
+    ln -sf "$REPO/$name" ".claude/skills/$name"
+    echo "✓ Added skill '$name' to current project (.claude/skills/$name)"
+    ;;
+  add-global)
+    name="$2"
+    if [ -z "$name" ]; then echo "Usage: skill add-global <name>"; exit 1; fi
+    if [ ! -d "$REPO/$name" ]; then echo "Error: skill '$name' not found in $REPO"; exit 1; fi
+    mkdir -p "$HOME/.claude/skills"
+    ln -sf "$REPO/$name" "$HOME/.claude/skills/$name"
+    echo "✓ Added skill '$name' globally (~/.claude/skills/$name)"
+    ;;
+  remove)
+    name="$2"
+    if [ -z "$name" ]; then echo "Usage: skill remove <name>"; exit 1; fi
+    rm -f ".claude/skills/$name"
+    echo "✓ Removed skill '$name' from current project"
+    ;;
+  remove-global)
+    name="$2"
+    if [ -z "$name" ]; then echo "Usage: skill remove-global <name>"; exit 1; fi
+    rm -f "$HOME/.claude/skills/$name"
+    echo "✓ Removed skill '$name' from global skills"
+    ;;
+  list)
+    echo "Available skills in $REPO:"
+    echo ""
+    for d in "$REPO"/*/; do
+      sname=$(basename "$d")
+      if [ -f "$d/SKILL.md" ]; then
+        desc=$(grep -m1 "^description:" "$d/SKILL.md" | sed 's/^description: *//')
+        printf "  %-20s %s\n" "$sname" "$desc"
+      fi
+    done
+    ;;
+  *)
+    echo "Claude Skills Manager"
+    echo ""
+    echo "Usage: skill <command> [name]"
+    echo ""
+    echo "Commands:"
+    echo "  add <name>           Add skill to current project"
+    echo "  add-global <name>    Add skill globally (all projects)"
+    echo "  remove <name>        Remove skill from current project"
+    echo "  remove-global <name> Remove skill from global"
+    echo "  list                 List all available skills"
+    ;;
+esac
